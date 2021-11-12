@@ -97,15 +97,17 @@ def main(
     v_size = sum_counts.shape[1]
     sum_counts_np = np.zeros(v_size, dtype=int)
     for v in range(v_size):
-        sum_counts_np[v] = sum_counts[0, v]  # a vector whose elements r the count of each token in vocab across corpus
-    word2id = dict([(w, cvectorizer.vocabulary_.get(w)) for w in cvectorizer.vocabulary_])
+        sum_counts_np[v] = sum_counts[0, v]
+        # a vector whose elements r the document frequency of each token in vocab across corpus
     id2word = dict([(cvectorizer.vocabulary_.get(w), w) for w in cvectorizer.vocabulary_])
+    # cvectorizer.vocabulary_ is a dictionary with tokens as keys and values represent their index.
     del cvectorizer
     print('  initial vocabulary size: {}'.format(v_size))
 
     # Sort elements in vocabulary
-    idx_sort = np.argsort(sum_counts_np)
+    idx_sort = np.argsort(sum_counts_np)  # [10, 102, 1, 5  ] indices of sorted tokens (in doc freq.)
     vocab_aux = [id2word[idx_sort[cc]] for cc in range(v_size)]
+    # vocab_aux is the list of words in corpus from least doc frequency to the most doc frequency.
 
     # Filter out stopwords (if any)
     vocab_aux = [w for w in vocab_aux if w not in stop_words]
@@ -114,8 +116,7 @@ def main(
     # Create dictionary and inverse dictionary
     vocab = vocab_aux
     del vocab_aux
-    word2id = dict([(w, j) for j, w in enumerate(vocab)])
-    id2word = dict([(j, w) for j, w in enumerate(vocab)])
+    word2id = dict([(w, n) for n, w in enumerate(vocab)])
 
     # Split in train/test/valid
     print('tokenizing documents and splitting into train/test/valid...')
@@ -123,10 +124,11 @@ def main(
     trSize = num_docs_tr - 100
     tsSize = len(init_docs_ts)
     vaSize = 100
-    idx_permute = np.random.permutation(num_docs_tr).astype(int)
+    idx_permute = np.random.permutation(num_docs_tr).astype(int)  # returns a permuted (random) range(num_docs_tr).
 
     # Remove words not in train_data
     vocab = list(set([w for idx_d in range(trSize) for w in init_docs[idx_permute[idx_d]].split() if w in word2id]))
+    # set takes an iterable and converts it to an unordered set with distinct elements.
     word2id = dict([(w, j) for j, w in enumerate(vocab)])
     id2word = dict([(j, w) for j, w in enumerate(vocab)])
     print('  vocabulary after removing words not in train: {}'.format(len(vocab)))
