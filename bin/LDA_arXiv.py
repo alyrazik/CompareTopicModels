@@ -3,6 +3,7 @@ import pandas as pd
 import gc
 import os
 import json
+import pickle
 import time
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation as LDA
@@ -20,8 +21,14 @@ year_pattern = r'([1-2][0-9]{3})'
 keywords = ['topic modeling', 'neural topic model']
 min_df = 10
 max_df = 0.4
-number_topics = 3
-number_words = 10
+number_topics = 5  # Neural, LDA, evaluation, .. ,...
+number_words = 20
+doc_topic_prior = 0.2
+topic_word_prior = 0.01
+n_jobs = -1
+random_state = 12345
+max_iter = 20
+evaluate_every = 1
 
 
 def get_metadata():
@@ -93,11 +100,17 @@ cvectorizer = CountVectorizer(min_df=min_df, max_df=max_df, stop_words='english'
                               lowercase=True)
 
 lda = LDA(n_components=number_topics,
-          doc_topic_prior=1,
-          topic_word_prior=0.05,
-          n_jobs=-1, random_state=12345)
+          doc_topic_prior=doc_topic_prior,
+          topic_word_prior=topic_word_prior,
+          n_jobs=n_jobs, random_state=random_state,
+          evaluate_every=evaluate_every,
+          max_iter=max_iter)
 
 lda_data, lda_obj = data_to_lda(df, 'abstract', cvectorizer, lda)
+with open('lda_data.pkl', 'wb') as f:
+    pickle.dump(lda_data, f)  # note that you have to load the pickled object using same pandas version as in here.
+    # so if you used google colab to unpickle the file, it gives an error as colab uses pandas 1.1.x not 1.3.4
+
 
 # Print the topics found by the LDA model
 print("Topics found via LDA on Count Vectorised data for ALL categories:")
