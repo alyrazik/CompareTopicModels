@@ -7,3 +7,7 @@ pyLDAvis~=3.3.1
 sklearn~=0.0
 scikit-learn~=1.0.1
 nltk~=3.6.5
+scipy~=1.7.2
+gensim~=4.1.2
+setuptools~=58.5.3
+spacy~=3.2.0

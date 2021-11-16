@@ -1,5 +1,7 @@
 import pandas as pd
-
+from sklearn.feature_extraction.text import CountVectorizer
+from gensim import matutils
+import scipy.sparse
 
 def data_to_lda(data,
                 text_column, vectorizer, lda_obj,
@@ -106,3 +108,24 @@ def print_topics(model, vectorizer, n_top_words, topics_to_include = None):
                 print(f"\nTopic ##{topic_idx+1}")
                 print("; ".join([words[i]
                                 for i in topic.argsort()[:-n_top_words - 1:-1]]))
+
+
+def model_from_text(col, max_df=0.25, min_df=10):
+    """
+    :param
+    col a series of text. Typically a column in pandas dataframe.
+    :return:
+    corpus is the term-document matrix in the gensim format
+    id2word is dictionary of the all terms and their respective location in the term-document matrix
+    """
+    cv = CountVectorizer(max_df=max_df, min_df=min_df)  # for topic modeling.
+    # Create document term matrix
+    data_cv = cv.fit_transform(col)
+    data_dtm = pd.DataFrame(data_cv.toarray(), columns=cv.get_feature_names())
+    data_dtm.reset_index()
+    tdm = data_dtm.transpose()
+    sparse_counts = scipy.sparse.csr_matrix(tdm)
+    corpus = matutils.Sparse2Corpus(sparse_counts)
+    id2word = dict((v, k) for k, v in cv.vocabulary_.items())  # index to word
+    # cvectorizer.vocabulary_ is a dictionary with tokens as keys and values represent their index.
+    return corpus, id2word
