@@ -18,6 +18,7 @@ Hyperparameters = {
     "iterations": 1,
     "num_topics": 20
 }
+metrics = {}
 # dataset = load_dataset("20-newsgroups", load_to_memory=False)
 # dataset = create_tf_dataset(filepath)
 
@@ -47,7 +48,7 @@ Hyperparameters = {
 
 def main():
     try:
-        lda = models.LdaModel.load(model_path)
+        lda = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
     except FileNotFoundError as error:
         print(error)
         print('Re-training the model...')
@@ -69,11 +70,21 @@ def main():
             passes=Hyperparameters['passes'],
             iterations=Hyperparameters['iterations']
         )
-        lda.save(model_path)
-        with open(model_path + '_hyperparameters.txt', 'a') as f:
+
+        topics = []
+        for i in range(Hyperparameters['num_topics']):
+            topic = lda.show_topic(i, 12)
+            topics.append([token for (token, probability) in topic])
+            print(topic)
+
+        cm = CoherenceModel(topics=topics, corpus=train_corpus, dictionary=training_dict, coherence='u_mass')
+        metrics['coherence'] = cm.get_coherence()
+        os.mkdir(model_path)
+        lda.save(os.path.join(model_path, 'saved_model'))
+        with open(os.path.join(model_path, 'hyperparameters.txt'), 'a') as f:
             json.dump(Hyperparameters, f)
-    for i in range(20):
-        print(lda.show_topic(i, 12))
+        with open(os.path.join(model_path, 'metrics'), 'a') as f:
+            json.dump(metrics, f)
 
     # hdp = models.HdpModel(train_corpus, id2word=training_dict)
     # tfidf = models.TfidfModel(train_corpus)
