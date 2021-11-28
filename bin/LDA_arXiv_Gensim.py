@@ -2,7 +2,7 @@ import pandas as pd
 import json
 import time
 from COTM.Vanilla_LDA import model_from_text
-from COTM.cleaning import clean_all
+from COTM.cleaning import clean_tokenize
 from gensim import models
 import gensim
 from gensim import corpora
@@ -70,7 +70,7 @@ def main():
     # clean
     print("Cleaning text...")
     t = time.time()
-    df['abstract'] = df['abstract'].apply(clean_all)
+    df['abstract'] = df['abstract'].apply(clean_tokenize)
     print("Cleaning time is ", time.time()-t)
     # construct bigrams and trigrams and include as one token in text (hyphenated)
     # Trigrams:
@@ -121,7 +121,7 @@ def main():
     #   pick the 100 highest pmi-scored bigrams?
     df['abstract'] = df['abstract'].apply(lambda x: replace_bigrams(x, bigrams))
 
-    print("showing abstracts after cleaning and bigrams/trigrams additioon...")
+    print("showing abstracts after cleaning and bigrams/trigrams addition...")
     print(df['abstract'])
     ##############################################################################################################
 

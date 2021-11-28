@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import time
-from COTM.cleaning import clean_all
+from COTM.cleaning import clean_tokenize
 import gensim
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
@@ -63,7 +63,7 @@ def main():
     # clean
     print("Cleaning text...")
     t = time.time()
-    df['abstract'] = df['abstract'].apply(clean_all)
+    df['abstract'] = df['abstract'].apply(clean_tokenize)
     print("Cleaning time is ", time.time()-t)
 
     dictionary = gensim.corpora.Dictionary(df['abstract'])
