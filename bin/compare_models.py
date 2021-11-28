@@ -4,12 +4,20 @@ import logging
 import time
 from datetime import datetime
 import os
+import json
 from gensim.models.coherencemodel import CoherenceModel
 logging.basicConfig(level=logging.INFO)
 num_topics = 20
 models_dir = "..\\saved_models"
 saving_time = datetime.now().strftime('%Y-%m-%d_%H_%M')  # '%Y-%m-%d_%H_%M'
-model_name = os.path.join(models_dir, f'lda_{num_topics}_{saving_time}')
+model_path = os.path.join(models_dir, f'lda_{num_topics}_{saving_time}')
+# Hyperparameters
+
+Hyperparameters = {
+    "passes": 1,
+    "iterations": 1,
+    "num_topics": 20
+}
 # dataset = load_dataset("20-newsgroups", load_to_memory=False)
 # dataset = create_tf_dataset(filepath)
 
@@ -39,7 +47,7 @@ model_name = os.path.join(models_dir, f'lda_{num_topics}_{saving_time}')
 
 def main():
     try:
-        lda = models.LdaModel.load(model_name)
+        lda = models.LdaModel.load(model_path)
     except FileNotFoundError as error:
         print(error)
         print('Re-training the model...')
@@ -54,8 +62,16 @@ def main():
         print(time.time()-t)
         # print("training samples, ", len(train_corpus))
         # print("testing samples, ", len(test_corpus))
-        lda = models.LdaModel(train_corpus, id2word=training_dict, num_topics=num_topics)
-        lda.save(model_name)
+        lda = models.LdaModel(
+            train_corpus,
+            id2word=training_dict,
+            num_topics=Hyperparameters['num_topics'],
+            passes=Hyperparameters['passes'],
+            iterations=Hyperparameters['iterations']
+        )
+        lda.save(model_path)
+        with open(model_path + '_hyperparameters.txt', 'a') as f:
+            json.dump(Hyperparameters, f)
     for i in range(20):
         print(lda.show_topic(i, 12))
 

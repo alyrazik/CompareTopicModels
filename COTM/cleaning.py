@@ -7,6 +7,7 @@
 from gensim.parsing import preprocessing
 import nltk
 import spacy
+import re
 # from collections import Counter
 nlp = spacy.load('en_core_web_sm')
 # import remove_stopwords, preprocess_string, stem, strip_non_alphanum,
@@ -51,7 +52,15 @@ def keep_nouns(s):
 
 def clean_tokenize(s):
     """Performs text cleaning including lemmatization. Returns a clean list of tokens."""
-    processed = preprocessing.remove_stopwords(s.lower(), STOPWORDS).split()
+    processed = s.lower()
+    processed = preprocessing.strip_tags(processed)
+    processed = preprocessing.strip_punctuation(processed)
+    processed = preprocessing.strip_short(processed, minsize=3)
+    # pattern = re.compile(r'\b('+r'|'.join(STOPWORDS)+r')\b\S*')
+    # processed = pattern.sub('', processed)  # slower way to remove stop words.
+    processed = processed.split()
+    processed = [token for token in processed if token not in STOPWORDS]
+
     # processed = preprocessing.preprocess_string(processed,
     #                                             filters=[preprocessing.strip_tags,
     #                                                      preprocessing.strip_non_alphanum,
