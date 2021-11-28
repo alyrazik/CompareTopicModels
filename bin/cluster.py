@@ -17,15 +17,15 @@ max_df = 0.3
 min_df = 0.05
 BIGRAMS_FREQUENCY = 10
 TRIGRAM_FREQUENCY = 10
+DataPath = 'C://Users//Aly//PycharmProjects//TopicModel//arXiv_metadata//arxiv-metadata-oai-snapshot.json'
+DataPath = '//home//mohamed//PycharmProjects//TopicModel//arXiv_metadata//arxiv-metadata-oai-snapshot.json'
 
 # Read file that contains metadata about papers (no paper text)
 
 
 def get_metadata():
     """define a generator function since file is too big to handle in memory all at once"""
-    with open('C://Users//Aly//PycharmProjects//TopicModel//'
-              'arXiv_metadata//arxiv-metadata-oai-snapshot.json',
-              'r') as file:
+    with open(DataPath, 'r') as file:
         for line in file:
             yield line
 
@@ -76,36 +76,49 @@ def main():
     ##############################################################################################################
 
     # model
-    model = gensim.models.doc2vec.Doc2Vec(vector_size=1500, min_count=2, epochs=40)
+    model = gensim.models.doc2vec.Doc2Vec(vector_size=150, min_count=2, epochs=40)
     model.build_vocab(corpus)
     # print(f"Word 'neural' appeared {model.wv.get_vecattr('neural', 'count')} times in the training corpus.")
     model.train(corpus, total_examples=model.corpus_count, epochs=model.epochs)
+    vectors = df['abstract'].apply(
+            lambda x: model.infer_vector(x)
+            ).tolist()
+    print(type(vectors))
+    print(vectors)
 
-    ##############################################################################################################
+    #############################################################################################################
 
     # Cluster
     K_value = 4
     kmeans_model = KMeans(n_clusters=K_value, init='k-means++', n_init=2000, max_iter=6000)
-    X = kmeans_model.fit(model.docvecs)
+    # X = kmeans_model.fit(vectors)
     labels = kmeans_model.labels_.tolist()
-    clusters = kmeans_model.fit_predict(model.docvecs)
-    # PCA
-    l = kmeans_model.fit_predict(model.docvecs.vectors_docs)
-    pca = PCA(n_components=2).fit(model.docvecs.vectors_docs)
-    datapoint = pca.transform(model.docvecs.vectors_docs)
+    clusters = kmeans_model.fit_predict(vectors)
+    centers = kmeans_model.cluster_centers_
+    print('centers', type(centers))
+    print(centers)
 
-    # GRAPH
-    # """**Plot the clustering result**"""
+    print('labels', type(labels))
+    print(labels)
+    print('clusters', type(clusters))
+    print(clusters)
+    # # PCA
+    # l = kmeans_model.fit_predict(model.docvecs.vectors_docs)
+    # pca = PCA(n_components=2).fit(model.docvecs.vectors_docs)
+    # datapoint = pca.transform(model.docvecs.vectors_docs)
+    #
+    # # GRAPH
+    # # """**Plot the clustering result**"""
+    #
+    # plt.figure
+    # label1 = ["#FFFF00", "#008000", "#0000FF", "#800080"]
+    # color = [label1[i] for i in labels]
+    # plt.scatter(datapoint[:, 0], datapoint[:, 1], c=color)
 
-    plt.figure
-    label1 = ["#FFFF00", "#008000", "#0000FF", "#800080"]
-    color = [label1[i] for i in labels]
-    plt.scatter(datapoint[:, 0], datapoint[:, 1], c=color)
-
-    centroids = kmeans_model.cluster_centers_
-    centroidpoint = pca.transform(centroids)
-    plt.scatter(centroidpoint[:, 0], centroidpoint[:, 1], marker='^', s=150, c='#000000')
-    plt.show()
+    # centroids = kmeans_model.cluster_centers_
+    # centroidpoint = pca.transform(centroids)
+    # plt.scatter(centroidpoint[:, 0], centroidpoint[:, 1], marker='^', s=150, c='#000000')
+    # plt.show()
 
     ##############################################################################################################
 

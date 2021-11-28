@@ -24,15 +24,14 @@ max_df = 0.3
 min_df = 0.05
 BIGRAMS_FREQUENCY = 10
 TRIGRAM_FREQUENCY = 10
+DataPath = '//home//mohamed//PycharmProjects//TopicModel//arXiv_metadata//arxiv-metadata-oai-snapshot.json'
 
 # Read file that contains metadata about papers (no paper text)
 
 
 def get_metadata():
     """define a generator function since file is too big to handle in memory all at once"""
-    with open('C://Users//Aly//PycharmProjects//TopicModel//'
-              'arXiv_metadata//arxiv-metadata-oai-snapshot.json',
-              'r') as file:
+    with open(DataPath, 'r') as file:
         for line in file:
             yield line
 
