@@ -27,7 +27,7 @@ model_path = os.path.join(models_dir, f'lda_{num_topics}_{saving_time}')
 
 # Hyperparameters
 Hyperparameters = {
-    "passes": 10,
+    "passes": 2,
     "iterations": 2,
     "num_topics": 20,
     "ETA": 'auto'
