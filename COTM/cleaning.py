@@ -40,7 +40,9 @@ STOPWORDS = frozenset([
     'becomes', 'you', 'if', 'nobody', 'unless', 'whereas', 'see', 'though', 'may', 'after', 'upon', 'most', 'hereupon',
     'eight', 'but', 'serious', 'nothing', 'such', 'why', 'off', 'a', 'don', 'whereby', 'third', 'i', 'whole', 'noone',
     'sometimes', 'well', 'amoungst', 'yours', 'their', 'rather', 'without', 'so', 'five', 'the', 'first', 'with',
-    'make', 'once', 'the', 'for', 'and', 'are', 'edu'
+    'make', 'once', 'the', 'for', 'and', 'are', 'edu',
+    'subject', 'lines', 'max',
+    'com', 'organization', 'writes', 'article', 'msg', 'like', 'people', 'university', 'space', 'posting', 'know'
 ])
 
 

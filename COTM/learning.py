@@ -1,5 +1,35 @@
 """Tensorflow learning utilities."""
 import tensorflow as tf
+from gensim.models.callbacks import Metric
+from COTM.metrics import diversity
+import gensim.models.callbacks
+import numpy as np
+
+
+class DiversityMetric(Metric):
+    """Metric class to report Diversity"""
+
+    def __init__(self, num_topics):
+        self.logger = None
+        self.title = None
+        self.num_topics = num_topics
+        self.tokens = []  # To calculate diversity, obtain the most probable 25 tokens across all topics.
+
+    def get_value(self, **kwargs):
+        super(DiversityMetric, self).set_parameters(**kwargs)
+        for i in range(self.num_topics):
+            for item in self.model.show_topic(i, topn=50):  # 50 is chosen heuristically to include most probable tokens
+                self.tokens.append(item)
+        sorted_tokens = sorted(self.tokens, key=lambda x: x[1], reverse=True)
+        print(sorted_tokens)
+        return diversity([token for (token, prob) in sorted_tokens][:25])
+
+    # def on_epoch_begin(self, model):
+    #     print("HELLO ALY, Epoch #{} start".format(self.epoch))
+
+    # def on_epoch_end(self, epoch, topics):
+    #     print("Epoch #{} end".format(self.epoch))
+    #     self.epoch += 1
 
 
 # def train_input_fn(params):

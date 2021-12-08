@@ -2,7 +2,7 @@ import tensorflow as tf
 import logging
 import gensim.downloader as api
 import json
-from .cleaning import clean_tokenize
+from COTM.cleaning import clean_tokenize
 logger = logging.getLogger('datasets')
 
 
@@ -59,6 +59,11 @@ class MyCorpus:
         # self.length = 0
 
     # def __len__(self):
+    #     with open(self.filepath, 'r') as f:
+    #         for line in f:
+    #             d = json.loads(line)
+    #             if d.get('set') == self.set:
+    #                 self.length += 1
     #     return self.length
 
     def obtain_document_text(record):
