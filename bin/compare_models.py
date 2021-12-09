@@ -5,20 +5,10 @@ import time
 from datetime import datetime
 import os
 import json
-import numpy as np
-import gensim
-from COTM.metrics import diversity
+from COTM.metrics import diversity, show_progress
 from gensim.models.callbacks import PerplexityMetric, CoherenceMetric, ConvergenceMetric, DiffMetric
 from COTM.learning import DiversityMetric
-from gensim.models.callbacks import Callback
-import pyLDAvis
-from pyLDAvis import gensim_models
-import pickle
 from gensim.models.coherencemodel import CoherenceModel
-import matplotlib.pyplot as plt
-import seaborn as sb
-import pandas as pd
-from gensim import utils
 
 # Setup logging and constants
 logging.basicConfig(level=logging.INFO)
@@ -35,58 +25,43 @@ Hyperparameters = {
     "ETA": 'auto'
 }
 metrics = {}
-# dataset = load_dataset("20-newsgroups", load_to_memory=False)
-# dataset = create_tf_dataset(filepath)
 
-# for post in dataset.take(1):
-#     print(post)
-#     tf.io.decode_json_example(post)
-#     # parse_record(post, ['data', 'set'])['set']
-
-
-# dataset = tf.data.Dataset.from_generator(
-#     generate_record,
-#     output_types=tf.string,
-#     output_shapes=(None, ),
-# )
-#
-# for document in dataset.take(1):
-#     print(type(document))
-# def parse_record(record, features):
-#     """ parses one record of dataset to retrieve fields"""
-#     return {feature: record.get('feature') for feature in features}
-# below was done to compare time it takes, it took 11.4 seconds compared to 4.1 sec for the generator case above
-# t_ = time.time()
-# dataset = load_dataset("20-newsgroups", load_to_memory=True)
-# dataset = [record.get('data').split() for record in dataset]
-# MyDict = corpora.Dictionary(dataset)
-# print(time.time()-t)
 
 def main():
+    filepath = 'C:\\Users\\Aly\\gensim-data\\20-newsgroups\\20-newsgroups.json'
+    # topic, set, data, id
+    # 11314 train and 18846 total records.
+    t = time.time()
+    train_corpus = MyCorpus(filepath)  # generates tokenized documents one at a time
+    training_dict = corpora.Dictionary(train_corpus)
+    train_corpus = MyCorpus(filepath, my_dictionary=training_dict)  # generate tokenized BOW documents one at a time
+    test_corpus = MyCorpus(filepath, my_dictionary=training_dict, my_set='test')
+    print(time.time() - t)
+    # print("training samples, ", len(train_corpus))
+    # print("testing samples, ", len(test_corpus))
+
     try:
         lda = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # hdp = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # lsi = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # nmf = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # ctm = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # etm = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # ProdLda = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # NeuralLda = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # CATM = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+        # COTM = models.LdaModel.load(os.path.join(model_path, 'saved_model'))
+
     except FileNotFoundError as error:
         print(error)
         print('Re-training the model...')
-        filepath = 'C:\\Users\\Aly\\gensim-data\\20-newsgroups\\20-newsgroups.json'
-        # topic, set, data, id
-        # 11314 train and 18846 total records.
-        t = time.time()
-        train_corpus = MyCorpus(filepath)  # generates tokenized documents one at a time
-        training_dict = corpora.Dictionary(train_corpus)
-        train_corpus = MyCorpus(filepath, my_dictionary=training_dict)  # generate tokenized BOW documents one at a time
-        test_corpus = MyCorpus(filepath, my_dictionary=training_dict, my_set='test')
-        print(time.time()-t)
-        # print("training samples, ", len(train_corpus))
-        # print("testing samples, ", len(test_corpus))
-
         # model
         perplexity_logger = PerplexityMetric(corpus=train_corpus, logger='shell')
         coherence_logger = CoherenceMetric(corpus=train_corpus, dictionary=training_dict, coherence='u_mass')
         diversity_logger = DiversityMetric(num_topics=Hyperparameters['num_topics'])
         convergence_logger = ConvergenceMetric(logger='shell')
         # diff_logger = DiffMetric()
-        metrics_list = [perplexity_logger, coherence_logger, diversity_logger, convergence_logger]  #, diff_logger]
+        metrics_list = [perplexity_logger, coherence_logger, diversity_logger, convergence_logger]  # , diff_logger]
         lda = models.LdaModel(
             train_corpus,
             id2word=training_dict,
@@ -97,20 +72,14 @@ def main():
             callbacks= metrics_list
         )
 
-    print("Hello")
-    print(lda.metrics)
-    print("done printing")
-    plt.figure(figsize=(10, 10))
-    length_ = len(lda.metrics)
-    for i, (metric_name, metric_values) in enumerate(lda.metrics.items()):
-        plt.subplot(length_ // 2, length_ - length_ // 2, i+1)
-        plt.errorbar(x=np.arange(Hyperparameters['passes']),
-                     y=metric_values
-                     )
-        # plt.title(f"{metric_name}")
-        plt.xlabel('Pass number')
-        plt.ylabel(f"{metric_name}")
-    plt.show()
+    show_progress(lda.metrics)
+    print("HDP model")
+    hdp = models.HdpModel(train_corpus, id2word=training_dict, callbacks=metrics_list)
+    show_progress(hdp.metrics)
+    # print(hdp.print_topics(num_topics=20, num_words=10))
+    tfidf = models.TfidfModel(train_corpus)
+    lsi = models.LsiModel(tfidf, id2word=training_dict, num_topics=20)
+    show_progress(lsi.metrics)
 
     # print the topics
     topics = []
@@ -135,11 +104,6 @@ def main():
     # perplexity
     metrics['perplexity'] = lda.log_perplexity(list(train_corpus))
 
-    # display data
-    # display_data = pyLDAvis.gensim_models.prepare(lda, corpus=train_corpus, dictionary=training_dict)
-    # with open(os.path.join(model_path, 'display_data'), 'wb') as file:
-    #     pickle.dump(display_data, file)
-
     # saving to file system
     os.mkdir(model_path)
     lda.save(os.path.join(model_path, 'saved_model'))
@@ -147,15 +111,6 @@ def main():
         json.dump(Hyperparameters, f)
     with open(os.path.join(model_path, 'metrics.txt'), 'a') as f:
         json.dump(metrics, f)
-
-    print("HDP model")
-    hdp = models.HdpModel(train_corpus, id2word=training_dict, callbacks=metrics_list)
-    print(hdp.print_topics(num_topics=20, num_words=10))
-    tfidf = models.TfidfModel(train_corpus)
-    lsi = models.LsiModel(tfidf, id2word=training_dict, num_topics=20)
-    # corpus_tfidf = tfidf[test_corpus]
-    # for doc in corpus_tfidf:
-    #     print(doc)
 
 
 if __name__ == '__main__':
