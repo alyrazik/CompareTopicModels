@@ -56,15 +56,15 @@ class MyCorpus:
         self.filepath = filepath
         self.my_dictionary = my_dictionary
         self.set = my_set
-        # self.length = 0
+        self.length = 0
 
-    # def __len__(self):
-    #     with open(self.filepath, 'r') as f:
-    #         for line in f:
-    #             d = json.loads(line)
-    #             if d.get('set') == self.set:
-    #                 self.length += 1
-    #     return self.length
+    def __len__(self):
+        with open(self.filepath, 'r') as f:
+            for line in f:
+                d = json.loads(line)
+                if d.get('set') == self.set:
+                    self.length += 1
+        return self.length
 
     def obtain_document_text(record):
         return record.get('data').split()
