@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from gensim.models.coherencemodel import CoherenceModel
+
 
 
 def diversity(tokens):
@@ -32,3 +34,28 @@ def show_progress(metrics):
         plt.xlabel('Pass number')
         plt.ylabel(f"{metric_name}")
     plt.show()
+
+
+def assess_model(model, corpus, dictionary, n_topics=None):
+    topics = []
+    metrics = {}
+    for i in range(n_topics):
+        topic = model.show_topic(i, 12)
+        topics.append([token for (token, probability) in topic])
+
+    # Log the metrics
+    # coherence
+    cm = CoherenceModel(topics=topics, corpus=corpus, dictionary=dictionary, coherence='u_mass')
+    metrics['coherence'] = cm.get_coherence()
+    # diversity
+    tokens = []  # To calculate diversity, obtain the most probable 25 tokens across all topics.
+    for i in range(n_topics):
+        for item in model.show_topic(i, topn=50):  # 50 is chosen heuristically to include most probable tokens.
+            tokens.append(item)
+    # print(tokens)
+    sorted_tokens = sorted(tokens, key=lambda x: x[1], reverse=True)
+    # print(sorted_tokens)
+    metrics['diversity'] = diversity([token for (token, prob) in sorted_tokens][:25])
+    # perplexity
+    metrics['perplexity'] = model.log_perplexity(list(corpus))
+    return metrics
