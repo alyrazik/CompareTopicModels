@@ -3,6 +3,7 @@ import logging
 import gensim.downloader as api
 import json
 from COTM.cleaning import clean_tokenize
+from COTM.stopwords import STOPWORDS_FACTORY
 logger = logging.getLogger('datasets')
 
 
@@ -40,22 +41,24 @@ def load_dataset(name, load_to_memory=True):
               "https://github.com/RaRe-Technologies/gensim-data")
 
 
-class MyCorpus:
+class Dataset:
     def __iter__(self):
         with open(self.filepath, 'r') as f:
             for line in f:
                 d = json.loads(line)
                 if d.get('set') == self.set:
                     if self.my_dictionary is not None:
-                        yield self.my_dictionary.doc2bow(clean_tokenize(d.get('data')))
+                        yield self.my_dictionary.doc2bow(clean_tokenize(d.get('data'), stopwords=self.stopwords))
                     else:
-                        yield clean_tokenize(d.get('data'))
+                        yield clean_tokenize(d.get('data'), stopwords=self.stopwords)
                     # yield self.obtain_document_text(d)
 
-    def __init__(self, filepath, my_dictionary=None, my_set='train'):
+    def __init__(self, filepath, dictionary=None, set='train',
+                 stopwords=STOPWORDS_FACTORY['gensim'] + STOPWORDS_FACTORY['aly']):
         self.filepath = filepath
-        self.my_dictionary = my_dictionary
-        self.set = my_set
+        self.my_dictionary = dictionary
+        self.set = set
+        self.stopwords = stopwords
         self.length = 0
 
     def __len__(self):

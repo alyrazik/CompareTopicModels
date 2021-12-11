@@ -23,7 +23,7 @@ def show_progress(metrics):
         displays the figure with axes to display trends.
         """
 
-    plt.figure(figsize=(10, 10))
+    fig = plt.figure(figsize=(10, 10))
     length_ = len(metrics)
     for i, (metric_name, metric_values) in enumerate(metrics.items()):
         plt.subplot(length_ // 2, length_ - length_ // 2, i+1)
@@ -34,6 +34,8 @@ def show_progress(metrics):
         plt.xlabel('Pass number')
         plt.ylabel(f"{metric_name}")
     plt.show()
+    return fig
+
 
 
 def assess_model(model, corpus, dictionary, n_topics=None):
@@ -56,6 +58,6 @@ def assess_model(model, corpus, dictionary, n_topics=None):
     sorted_tokens = sorted(tokens, key=lambda x: x[1], reverse=True)
     # print(sorted_tokens)
     metrics['diversity'] = diversity([token for (token, prob) in sorted_tokens][:25])
-    # perplexity
-    metrics['perplexity'] = model.log_perplexity(list(corpus))
+    # # perplexity
+    # metrics['perplexity'] = model.log_perplexity(list(corpus))
     return metrics

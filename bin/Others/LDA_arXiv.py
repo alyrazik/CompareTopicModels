@@ -26,8 +26,7 @@ evaluate_every = 1
 def get_metadata():
     """define a generator function since file is too big to handle in memory all at once"""
 
-    with open('C://Users//Aly//PycharmProjects//TopicModel//'
-              'arXiv_metadata//arxiv-metadata-oai-snapshot.json',
+    with open('/arXiv_metadata/arxiv-metadata-oai-snapshot.json',
               'r') as file:
         for line in file:
             yield line
