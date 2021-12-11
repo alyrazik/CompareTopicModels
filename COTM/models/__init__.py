@@ -1,14 +1,15 @@
 """Initialization for `paccmann.model.model_specifications` submodule."""
-from .lda import lda_fn
-from .lsi import lsi_fn
-from .nmf import nmf_fn
-from .hdp import hdp_fn
-from .ctm import ctm_fn
-from .etm import etm_fn
-from .ProdLda import prod_lda_fn
-from .NeuralLda import neural_lda_fn
-from .BERTopic import BERTopic_fn
-from .CATM import catm_fn
+from COTM.models.model_specs.lda import lda_fn
+from COTM.models.model_specs.lsi import lsi_fn
+from COTM.models.model_specs.nmf import nmf_fn
+from COTM.models.model_specs.hdp import hdp_fn
+from COTM.models.model_specs.ctm import ctm_fn
+from COTM.models.model_specs.etm import etm_fn
+from COTM.models.model_specs.ProdLda import prod_lda_fn
+from COTM.models.model_specs.NeuralLda import neural_lda_fn
+from COTM.models.model_specs.BERTopic import BERTopic_fn
+from COTM.models.model_specs.CATM import catm_fn
+from COTM.models.core import model_fn
 
 
 MODEL_FACTORY = {

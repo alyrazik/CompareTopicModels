@@ -4,7 +4,7 @@ import pickle
 import time
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation as LDA
-from COTM.Vanilla_LDA import data_to_lda, print_topics
+from bin.Others.Vanilla_LDA import data_to_lda, print_topics
 import pyLDAvis.sklearn
 
 # Constants
