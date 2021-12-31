@@ -21,7 +21,7 @@ class DiversityMetric(Metric):
             for item in self.model.show_topic(i, topn=50):  # 50 is chosen heuristically to include most probable tokens
                 self.tokens.append(item)
         sorted_tokens = sorted(self.tokens, key=lambda x: x[1], reverse=True)
-        print(sorted_tokens)
+        # print(sorted_tokens)
         return diversity([token for (token, prob) in sorted_tokens][:25])
 
     # def on_epoch_begin(self, model):

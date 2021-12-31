@@ -90,7 +90,7 @@ def main(
         training_dict = corpora.Dictionary(train_corpus)
         train_corpus = Dataset(train_filepath, dictionary=training_dict)  # generate tokenized BOW documents 1 @ a time
         test_corpus = Dataset(eval_filepath, dictionary=training_dict, set='test')
-        print(time.time() - t)
+        print('Reading time is:', time.time() - t)
         params = {}
         with open(params_path, 'r') as f:
             params.update(json.load(f))
