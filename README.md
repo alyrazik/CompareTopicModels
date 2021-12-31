@@ -1,6 +1,6 @@
 # Compare Topic Models
 
-A package that gives a single interface to running and evaluation of several topic models.
+A package that gives a single interface to running and evaluation of several topic models on your data.
 You can run it from the command line or use it in your python scripts. 
 
 
