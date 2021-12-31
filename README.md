@@ -6,7 +6,19 @@ You can run it from the command line or use it in your python scripts.
 
 ## Usage:
 
-Please clone the repo to your local host and run the script 'train_model.py' from the command line. 
+Please clone the repo to your local host and run the script 'bin/train_model.py' from the command line. 
+During the training, the script displays the perplexity score every epoch of training. After the training
+is complete, charts of the evolution of metrics with passes are shown.
+
+The script saves its artefacts in a folder within the specified mode_path (see below argument).
+The artefacts are:
+
+* hyperparameters.txt: those used to train the model.
+* metics.txt: the final values of the model metrics, such as, perplexity score and coherence score.
+* metrics_progression_with_passes.png: the charts that were displayed after the training finishes.
+* saved_model: This is the saved_model which can be loaded using gensim library.
+* Other files that are saved along with the model by gensim. 
+
 you need to specify the following arguments. Note that currently only lda model is available. 
 also optional arguments defaults to None and are not used. 
 
