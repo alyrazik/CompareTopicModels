@@ -1,0 +1,6 @@
+{
+    "passes": 2,
+    "iterations": 1,
+    "num_topics": 20,
+    "ETA": "auto"
+}

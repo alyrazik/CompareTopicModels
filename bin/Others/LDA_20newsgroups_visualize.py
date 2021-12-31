@@ -1,4 +1,4 @@
-from COTM.Vanilla_LDA import data_to_lda, print_topics
+from bin.Others.Vanilla_LDA import data_to_lda, print_topics
 from sklearn.datasets import fetch_20newsgroups
 import string
 from sklearn.feature_extraction.text import CountVectorizer

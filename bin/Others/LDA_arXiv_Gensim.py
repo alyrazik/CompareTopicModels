@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import time
-from COTM.Vanilla_LDA import model_from_text
+from bin.Others.Vanilla_LDA import model_from_text
 from COTM.cleaning import clean_tokenize
 from gensim import models
 import gensim
