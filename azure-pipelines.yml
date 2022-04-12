@@ -1,4 +1,13 @@
 # Starter pipeline
+- task: ADOScheduledWorkItemQuery@0
+  inputs:
+    sendMethod: 'SendGrid'
+    project: '6b533eb7-c52c-4d5c-9415-e94b5a7440b9'
+    queryType: 'Shared'
+    query: 'c0e3685b-92b0-4b02-bab1-ec28c85b9a72'
+    sendIfEmpty: true
+    subject: 'All CSI entries'
+    emailAddresses: 'aly.abdelrazek@orange.com'
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
